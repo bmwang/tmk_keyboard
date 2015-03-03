@@ -38,9 +38,9 @@
  */
 static inline void KEY_ENABLE(void) { (PORTB &= ~(1<<6)); }
 static inline void KEY_UNABLE(void) { (PORTB |=  (1<<6)); }
-static inline bool KEY_STATE(void) { return (PIND & (1<<7)); }
-static inline void KEY_PREV_ON(void) { (PORTB |=  (1<<7)); }
-static inline void KEY_PREV_OFF(void) { (PORTB &= ~(1<<7)); }
+static inline bool KEY_STATE(void) { return (PINF & (1<<0)); }
+static inline void KEY_PREV_ON(void) { (PORTF |=  (1<<1)); }
+static inline void KEY_PREV_OFF(void) { (PORTF &= ~(1<<1)); }
 #ifdef HHKB_POWER_SAVING
 static inline void KEY_POWER_ON(void) {
     DDRB = 0xFF; PORTB = 0x40;          // change pins output
@@ -64,14 +64,11 @@ static inline void KEY_INIT(void)
     /* row,col,prev: output */
     DDRB  = 0xFF;
     PORTB = 0x40;   // unable
-    /* key: input with pull-up */
-    DDRD  &= ~0x80;
-    PORTD |=  0x80;
-#ifdef HHKB_JP
-    /* row extention for HHKB JP */
-    DDRC  |= (1<<6|1<<7);
-    PORTC |= (1<<6|1<<7);
-#endif
+
+    DDRF |= (1<<1);
+    DDRF &= (1<<0);
+    PORTF |= (1<<0);
+
     KEY_UNABLE();
     KEY_PREV_OFF();
 
@@ -110,9 +107,9 @@ static inline void KEY_SELECT(uint8_t ROW, uint8_t COL)
                                          ((ROW) & 0x07))
 #define KEY_ENABLE()            (PORTB &= ~(1<<6))
 #define KEY_UNABLE()            (PORTB |=  (1<<6))
-#define KEY_STATE()             (PINE & (1<<6))
-#define KEY_PREV_ON()           (PORTE |=  (1<<7))
-#define KEY_PREV_OFF()          (PORTE &= ~(1<<7))
+#define KEY_STATE()             (PINF & (1<<0))
+#define KEY_PREV_ON()           (PORTF |=  (1<<1))
+#define KEY_PREV_OFF()          (PORTF &= ~(1<<1))
 #define KEY_POWER_ON()
 #define KEY_POWER_OFF()
 #define KEY_POWER_STATE()       true
