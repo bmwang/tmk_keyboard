@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define PRODUCT_ID      0xCAFE
 #define DEVICE_VER      0x0104
 #define MANUFACTURER    Brandon
-#define PRODUCT         Brandon's HHKB
-#define DESCRIPTION     Brandon's HHKB, based on TMK
+#define PRODUCT         Brandons HHKB
+#define DESCRIPTION     Brandons HHKB, based on TMK
 
 
 /* matrix size */

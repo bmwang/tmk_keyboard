@@ -39,6 +39,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SERIAL_MOUSE_ENABLE
 #include "serial_mouse.h"
 #endif
+#ifdef ADB_MOUSE_ENABLE
+#include "adb.h"
+#endif
 
 
 #ifdef MATRIX_HAS_GHOST
@@ -59,6 +62,12 @@ static bool has_ghost_in_row(uint8_t row)
 #endif
 
 
+__attribute__ ((weak)) void matrix_setup(void) {}
+void keyboard_setup(void)
+{
+    matrix_setup();
+}
+
 void keyboard_init(void)
 {
     timer_init();
@@ -68,6 +77,9 @@ void keyboard_init(void)
 #endif
 #ifdef SERIAL_MOUSE_ENABLE
     serial_mouse_init();
+#endif
+#ifdef ADB_MOUSE_ENABLE
+    adb_mouse_init();
 #endif
 
 
@@ -87,6 +99,9 @@ void keyboard_init(void)
 void keyboard_task(void)
 {
     static matrix_row_t matrix_prev[MATRIX_ROWS];
+#ifdef MATRIX_HAS_GHOST
+    static matrix_row_t matrix_ghost[MATRIX_ROWS];
+#endif
     static uint8_t led_status = 0;
     matrix_row_t matrix_row = 0;
     matrix_row_t matrix_change = 0;
@@ -96,13 +111,21 @@ void keyboard_task(void)
         matrix_row = matrix_get_row(r);
         matrix_change = matrix_row ^ matrix_prev[r];
         if (matrix_change) {
-            if (debug_matrix) matrix_print();
 #ifdef MATRIX_HAS_GHOST
             if (has_ghost_in_row(r)) {
-                matrix_prev[r] = matrix_row;
+                /* Keep track of whether ghosted status has changed for
+                 * debugging. But don't update matrix_prev until un-ghosted, or
+                 * the last key would be lost.
+                 */
+                if (debug_matrix && matrix_ghost[r] != matrix_row) {
+                    matrix_print();
+                }
+                matrix_ghost[r] = matrix_row;
                 continue;
             }
+            matrix_ghost[r] = matrix_row;
 #endif
+            if (debug_matrix) matrix_print();
             for (uint8_t c = 0; c < MATRIX_COLS; c++) {
                 if (matrix_change & ((matrix_row_t)1<<c)) {
                     action_exec((keyevent_t){
@@ -134,6 +157,10 @@ MATRIX_LOOP_END:
 
 #ifdef SERIAL_MOUSE_ENABLE
         serial_mouse_task();
+#endif
+
+#ifdef ADB_MOUSE_ENABLE
+        adb_mouse_task();
 #endif
 
     // update LED

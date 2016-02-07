@@ -198,7 +198,7 @@ There are 8 modifiers which has discrimination between left and right.
  See keycode table in [`doc/keycode.txt`](./keycode.txt) for description of keycodes.
 
  In regard to implementation side most of keycodes are identical with [HID usage][HID_usage](pdf) sent to host for real and some virtual keycodes are defined to support special actions.
-[HID_usage]: http://www.usb.org/developers/devclass_docs/Hut1_11.pdf
+[HID_usage]: http://www.usb.org/developers/hidpage/Hut1_12v2.pdf
 
 
 
@@ -368,17 +368,37 @@ Default Layer also has bitwise operations, they are executed when key is release
     MACRO( I(255), T(H), T(E), T(L), T(L), W(255), T(O), END )
 
 #### 2.3.1 Macro Commands
+- **MACRO()**
+- **MACRO_NONE**
+
 - **I()**   change interval of stroke.
 - **D()**   press key
 - **U()**   release key
 - **T()**   type key(press and release)
 - **W()**   wait
+- **SM()**  store modifier state
+- **RM()**  restore modifier state
+- **CM()**  clear modifier state
 - **END**   end mark
 
 #### 2.3.2 Examples
+***TBD***
 
-***TODO: sample implementation***
-See `keyboard/hhkb/keymap.c` for sample.
+    const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
+    {
+        switch (id) {
+            case HELLO:
+                return (record->event.pressed ?
+                        MACRO( I(0), T(H), T(E), T(L), T(L), W(255), T(O), END ) :
+                        MACRO_NONE );
+            case ALT_TAB:
+                return (record->event.pressed ?
+                        MACRO( D(LALT), D(TAB), END ) :
+                        MACRO( U(TAB), END ));
+        }
+        return MACRO_NONE;
+    }
+
 
 
 
