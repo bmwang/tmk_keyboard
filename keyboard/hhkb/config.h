@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEVICE_VER      0x0104
 #define MANUFACTURER    Brandon
 #define PRODUCT         Brandons HHKB
-#define DESCRIPTION     Brandons HHKB, based on TMK
+#define DESCRIPTION     Brandons HHKB based on TMK
 
 
 /* matrix size */
